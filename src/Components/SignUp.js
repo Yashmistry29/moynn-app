@@ -14,7 +14,7 @@ import {
   makeStyles,
   FormControlLabel,
 } from "@material-ui/core";
-import validate from '../Validation/SignupValidation';
+import validate from '../Validation/Validation';
 import useForm from '../Validation/SignupHooks'
 
 const useStyles = makeStyles((theme) => ({

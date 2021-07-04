@@ -1,4 +1,4 @@
-export default function validateSignup(values) {
+export default function validate(values) {
   let errors = {};
 
   //Name Errors
@@ -31,5 +31,20 @@ export default function validateSignup(values) {
   if(values.privacyChecked===false){
     errors.privacyChecked="Please Accept Terms of use and Privacy Policy"
   }
+
+  if(!values.country){
+    errors.country="Select a Country"
+  }if(!values.city){
+    errors.city="select a City"
+  }if(!values.Visa){
+    errors.visa="Select your Visa Status"
+  }if(!values.date){
+    errors.date="Enter Date"
+  }if(!values.mobile){
+    errors.mobile="Enter Mobile number"
+  }if(values.notice<=0){
+    errors.notice="Enter Notice Period"
+  }
+
   return errors;
 }

@@ -29,7 +29,7 @@ const useForm = (initialValues,validate) => {
   	}
 
 	const handleCheckedChange =(event)=>{
-		event.preventDefault()
+		event.persist()
 		setInputs(inputs=>({...inputs,[event.target.name]:event.target.checked}));
 	}
 

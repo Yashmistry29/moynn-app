@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import Dashboard from './Dashboard';
 import Dropzone from 'react-dropzone';
 import {
@@ -6,21 +6,20 @@ Grid,
 CssBaseline,
 makeStyles,
 Typography,
-TextField,
 Button,
-Fab
+TextField,
 } from '@material-ui/core';
+import axios from 'axios';
+import {Autocomplete} from '@material-ui/lab'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import cvupload from '../Images/3411083.jpg'
+import {toast} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
     color:"Gray",
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '72ch',
-    }
   },
   paper: {
     margin: theme.spacing(3,3),
@@ -62,11 +61,91 @@ const useStyles = makeStyles((theme) => ({
   },
   svg:{
     maxWidth:"50vh"
+  },
+  select:{
+    // display:"flex",
+    // alignItems:"strech",
+    // flexDirection:"column"
+    width:"72"
   }
 }));
 
 function Cv(props) {
   const classes=useStyles();
+  toast.configure();
+
+  const [AvailableJobList, setAvailableJobList] = useState([]);
+  const [ENUpload, setENUpload] = useState({
+    name:'',
+    url:'',
+  });
+  const [GEUpload, setGEUpload] = useState({
+    name:'',
+    url:'',
+  });
+  const DesiredPosition=[];
+  // const [Load, setLoad] = useState(false)
+
+  const handleENDrop=async(files)=>{
+    const formData = new FormData();
+    formData.append("upload_preset", "pnqxyr4o");
+    formData.append("file", files[0]);
+    const response = await axios.post(
+      "https://api.cloudinary.com/v1_1/moyyn/image/upload",
+      formData
+    );
+    const URL = response.data.url;
+    const val={
+      name:files[0].name,
+      url:URL,
+    }
+    setENUpload(val);
+    console.log(ENUpload);
+    toast.success(ENUpload.name+"file Uploaded")
+  }
+  
+  const handleGEDrop=async(files)=>{
+    const formData = new FormData();
+    formData.append("upload_preset", "pnqxyr4o");
+    formData.append("file", files[0]);
+    const response = await axios.post(
+      "https://api.cloudinary.com/v1_1/moyyn/image/upload",
+      formData
+    );
+    const URL = response.data.url;
+    const val={
+      name:files[0].name,
+      url:URL,
+    }
+    setGEUpload(val);
+    console.log(GEUpload);
+    toast.success(GEUpload.name+"file Uploaded")
+  };
+
+  const handleSelect=(event,value)=>{
+    DesiredPosition.push(...value);
+    console.log(DesiredPosition)
+  };
+
+  const handleSubmit=()=>{
+    const data={
+      ENUpload,
+      GEUpload,
+      DesiredPosition,
+    }
+    localStorage.setItem("CvDetails",JSON.stringify(data));
+  };
+
+  useEffect(() => {
+		fetch('https://backendmoyynapp.moyyn.com/desiredjoblist', {mode:'cors',method: 'POST',headers: { "Content-Type": "application/json" }})
+		.then(res => res.json())
+		.then(data => {
+			if(data.success){
+				setAvailableJobList(data.data.reverse());
+			}
+		}).catch((err)=>console.log(err));
+	},[])
+
   const logo=()=>{
     return(
       <React.Fragment>
@@ -75,16 +154,20 @@ function Cv(props) {
           direction="column"
           className={classes.paper2}
           alignItems="center"
+          spacing={1}
         >
           <Grid item>
             <Grid container direction="row" spacing={1}>
               <Grid item><Button variant="contained" color="primary">1</Button></Grid>
               <Grid item><Button variant="outlined" color="primary" href="/information">2</Button></Grid>
-              <Grid item><Button variant="outlined" color="primary">3</Button></Grid>
+              <Grid item><Button variant="outlined" color="primary" href="/career">3</Button></Grid>
             </Grid>
           </Grid>
+          <Grid item>
+            <Typography>Upload your CV</Typography>
+          </Grid>
           <Grid item xs={false} md={6} sm={3}>
-            <img className={classes.svg} src={cvupload} alt="FeelingProud.svg"/>
+            <img className={classes.svg} src={cvupload} alt="uploadCV Banner"/>
           </Grid>
         </Grid>
       </React.Fragment>
@@ -93,12 +176,12 @@ function Cv(props) {
   const CvForm=()=>{
     return(
       <React.Fragment>
-        <Grid container direction="column" alignItems="center" spacing={2}>
+        <Grid container direction="column" alignItems="strech" spacing={2}>
           <Grid item xs>
             <Grid container direction="row" alignItems="center" spacing={5}>
               <Grid item xs>
                 <Dropzone 
-                // onDrop={this.onDrop}
+                onDrop={(files)=>handleENDrop(files)}
                 >
                   {({getRootProps, getInputProps}) => (
                     <div className={classes.container}>
@@ -115,7 +198,7 @@ function Cv(props) {
               </Grid>
               <Grid item xs>
                 <Dropzone 
-                // onDrop={this.onDrop}
+                  onDrop={handleGEDrop}
                 >
                   {({getRootProps, getInputProps}) => (
                     <div className={classes.container}>
@@ -136,23 +219,31 @@ function Cv(props) {
             <Typography style={{fontSize:"large"}}>Position applying for</Typography>
           </Grid>
           <Grid item xs>
-            <TextField
-              id="outlined-select-currency-native"
-              select
-              label="Desired Positions"
-              // value={currency}
-              // onChange={handleChange}
-              SelectProps={{
-                native: true,
-              }}
-              variant="outlined"
-            >
-              {/* {currencies.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))} */}
-            </TextField>
+            {/* <div className={classes.select}>
+              <Multiselect
+                isObject={false}
+                onRemove={handleRemove}
+                onSelect={handleSelect}
+                options={AvailableJobList}
+                placeholder="Desired Position"
+                id="desiredPosition"
+              />
+            </div> */}
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={AvailableJobList}
+              filterSelectedOptions
+              onChange={(e,v)=>handleSelect(e,v)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  fullWidth
+                  placeholder="Desired Position"
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12} alignItems="center">
             <Grid container direction="row" alignItems="center" spacing={5}>
@@ -160,7 +251,7 @@ function Cv(props) {
                 <Button variant="contained" color="info" size="large" fullWidth href="/signup">Back</Button>
               </Grid>
               <Grid item xs={6}>
-                <Button variant="contained" color="primary" size="large" fullWidth href="/information">Next</Button>
+                <Button variant="contained" color="primary" size="large" fullWidth href="/information" onClick={handleSubmit}>Next</Button>
               </Grid>
             </Grid>
           </Grid>
