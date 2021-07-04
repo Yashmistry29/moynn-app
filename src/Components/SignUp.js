@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import Dashboard from './Dashboard'
 import { Link } from "react-router-dom";
 import proud from '../Images/Feelingproud.jpg';
@@ -15,7 +15,6 @@ import {
   FormControlLabel,
 } from "@material-ui/core";
 import {SignupValidate} from '../Validation/Validation';
-import useForm from '../Validation/SignupHooks'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUp(props) {
   const classes = useStyles();
-  const { inputs, handleCheckedChange, handleInputChange, handleSubmit, errors } = useForm(
-    {
+  const initialValues=
+  {
       props: props,
       firstname: "",
       lastname:"",
@@ -59,10 +58,37 @@ function SignUp(props) {
       confirmPassword: "",
       privacyChecked:true,
       jobChecked:true,
-    },
-    SignupValidate
-  );
+  };
   
+  const [inputs,setInputs] = useState(initialValues);
+	const [errors,setErrors] = useState({});
+  
+  const handleSubmit = (event) => {
+		event.preventDefault();
+		const validationErrors = SignupValidate(inputs);
+		const noErrors = Object.keys(validationErrors).length === 0;
+    console.log(validationErrors,noErrors)
+		setErrors(validationErrors);
+		if(noErrors){
+			console.log("Authenticated",inputs);
+			localStorage.setItem("userDetails",JSON.stringify(inputs))
+      props.history.push("/cv");
+		}else{
+			console.log("errors try again",validationErrors);
+		}
+		
+	}
+
+  const handleInputChange = (event) => {
+    event.persist();
+    setInputs(inputs => ({...inputs, [event.target.name]: event.target.value}));
+  }
+
+  const handleCheckedChange =(event)=>{
+    event.persist()
+    setInputs(inputs=>({...inputs,[event.target.name]:event.target.checked}));
+  }
+
   const logo=()=>{
     return(
       <React.Fragment>
