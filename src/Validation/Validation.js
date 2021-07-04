@@ -1,4 +1,4 @@
-export default function validate(values) {
+export function SignupValidate(values) {
   let errors = {};
 
   //Name Errors
@@ -31,7 +31,12 @@ export default function validate(values) {
   if(values.privacyChecked===false){
     errors.privacyChecked="Please Accept Terms of use and Privacy Policy"
   }
+  return errors;
+}
 
+export function informationValidate(values){
+  let errors = {};
+  
   if(!values.country){
     errors.country="Select a Country"
   }if(!values.city){
@@ -47,4 +52,22 @@ export default function validate(values) {
   }
 
   return errors;
+}
+
+export function careerValidation(values){
+  let errors = {};
+  
+  if(!values.career){
+    errors.career="Select your Career Level"
+  }if(!values.industry){
+    errors.industry="select your industry"
+  }if(values.skills.length===0){
+    errors.skills="Select your Skills"
+  }if(values.experienceList.length===0){
+    errors.experience="Select your Experience"
+  }if(values.languageList.length===0){
+    errors.language="Select your Language set"
+  }
+
+  return errors; 
 }

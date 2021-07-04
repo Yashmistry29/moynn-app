@@ -14,6 +14,7 @@ import {
 import {Autocomplete} from '@material-ui/lab'
 import info from '../Images/20943447.jpg'
 import MuiPhoneNumber from 'material-ui-phone-number';
+import {informationValidate} from '../Validation/Validation'
 import {
   countriesArray,
   citiesArray,
@@ -28,18 +29,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
     color:"Gray",
-    // '& .MuiTextField-root': {
-    //   margin: theme.spacing(1),
-    //   width: '35ch',
-    // }
   },
   paper: {
     margin: theme.spacing(3,3),
     padding:theme.spacing(1),
-    // display: "flex",
-    // // background:"black",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
   upload:{
     display:"flex",
@@ -51,9 +44,6 @@ const useStyles = makeStyles((theme) => ({
   paper2: {
     margin: theme.spacing(6,1),
     padding:theme.spacing(1),
-    // display: "flex",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
 }));
 
@@ -74,6 +64,7 @@ function Information(props) {
   }
 
   const [inputs, setinputs] = useState(initialValues)
+  const [errors,setErrors]=useState({});
 
   const handleCountryChange=(event,value)=>{
     event.persist();
@@ -105,7 +96,20 @@ function Information(props) {
     setinputs(inputs => ({...inputs, mobile:value}));
   }
 
-  const handleSubmit=()=>{
+  const handleSubmit=(event)=>{
+    event.preventDefault();
+    const validationErrors = informationValidate(inputs);
+		const noErrors = Object.keys(validationErrors).length === 0;
+    console.log(validationErrors,noErrors)
+		setErrors(validationErrors);
+		if(noErrors){
+			console.log("Authenticated",inputs);
+			localStorage.setItem("InformationDetails",JSON.stringify(inputs))
+      console.log(props.history)
+      props.history.push("/career");
+		}else{
+			console.log("errors try again",validationErrors);
+		}
     console.log(inputs);
   }
   useEffect(() => {
@@ -170,7 +174,7 @@ function Information(props) {
                 required 
                 label="Country of Residence" 
                 variant="outlined" 
-                // {...(errors.country && {error:true,helperText:errors.country})}
+                {...(errors.country && {error:true,helperText:errors.country})}
               />}
             />
           </Grid>
@@ -180,7 +184,7 @@ function Information(props) {
               options={citiesList}
               onChange={(e,v)=>handleCityChange(e,v,"select-option")}
               renderInput={(params) => <TextField {...params} value={inputs.city} required label="City of Residence" variant="outlined" 
-              // {...(errors.city && {error:true,helperText:errors.city})}
+              {...(errors.city && {error:true,helperText:errors.city})}
               />}
             />
           </Grid>
@@ -190,7 +194,7 @@ function Information(props) {
               options={visa}
               onChange={(e,v)=>handleVisaChange(e,v,"select-option")}
               renderInput={(params) => <TextField {...params} value={inputs.Visa} required label="Visa Status" variant="outlined" 
-              // {...(errors.visa && {error:true,helperText:errors.visa})}
+              {...(errors.visa && {error:true,helperText:errors.visa})}
               />}
             />
           </Grid>
@@ -203,7 +207,7 @@ function Information(props) {
               fullWidth
               required
               value={inputs.date}
-              // {...(errors.date && {error:true,helperText:errors.date})}
+              {...(errors.date && {error:true,helperText:errors.date})}
               onChange={handleInputChange}
               InputLabelProps={{
                 shrink: true,
@@ -244,7 +248,7 @@ function Information(props) {
               name="mobile"
               value={inputs.mobile}
               required
-              // {...(errors.mobile && {error:true,helperText:errors.mobile})}
+              {...(errors.mobile && {error:true,helperText:errors.mobile})}
               onChange={handleMobileChange}
               fullWidth
             />
@@ -258,7 +262,7 @@ function Information(props) {
               disabled={!inputs.currentlyEmployed}
               type="number"
               name="notice"
-              // {...(errors.notice && {error:true,helperText:errors.notice})}
+              {...(errors.notice && {error:true,helperText:errors.notice})}
               value={inputs.notice}
               onChange={handleInputChange}
             />
@@ -269,7 +273,7 @@ function Information(props) {
               variant="contained"
               color="info"
               size="large"
-              href="/signup">Back</Button>
+              href="/cv">Back</Button>
           </Grid>
           <Grid item xs md={6}>
             <Button

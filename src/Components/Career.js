@@ -20,10 +20,12 @@ import {
   Experience,
   languageLevel,
   languages,
-} from '../Data/static-data'
-
+} from '../Data/static-data';
+import {careerValidation} from '../Validation/Validation';
 import career from '../Images/MyApril4.jpg'
 import { Autocomplete } from '@material-ui/lab';
+import {toast} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const useStyles = makeStyles((theme) => ({
   svg:{
@@ -32,26 +34,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
     color:"Gray",
-    // '& .MuiTextField-root': {
-    //   margin: theme.spacing(1),
-    //   width: '72ch',
-    // }
   },
-  // formControl: {
-  //   margin: theme.spacing(1),
-  //   minWidth: 179,
-  // },
-  // formControl1: {
-  //   margin: theme.spacing(1),
-  //   minWidth: 275,
-  // },
   paper: {
     margin: theme.spacing(3,3),
     padding:theme.spacing(1),
-    // display: "flex",
-    // // background:"black",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
   upload:{
     display:"flex",
@@ -63,13 +49,10 @@ const useStyles = makeStyles((theme) => ({
   paper2: {
     margin: theme.spacing(6,1),
     padding:theme.spacing(1),
-    // display: "flex",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
 }));
 
-function Career() {
+function Career(props) {
   const classes=useStyles();
   const initialValues={
     career:'',
@@ -85,8 +68,10 @@ function Career() {
   const [experience,setExperience]=useState('');
   const [language,setLanguage]=useState('');
   const [Level,setLevel]=useState('');
-  const [inputs, setinputs] = useState(initialValues)
+  const [inputs, setinputs] = useState(initialValues);
+  const [errors,setErrors]=useState({});
   const Category=Object.keys(categoriesAndRoles);
+  toast.configure();
   
   const handleChange=(event)=>{
     event.persist();
@@ -141,10 +126,22 @@ function Career() {
   }
 
   const removeLanguageList=(index)=>{
-    inputs.LanguageList.splice(index,1);
+    inputs.languageList.splice(index,1);
   }
 
-  const handleSubmit=()=>{
+  const handleSubmit=(event)=>{
+    event.preventDefault();
+    const validationErrors = careerValidation(inputs);
+		const noErrors = Object.keys(validationErrors).length === 0;
+    console.log(validationErrors,noErrors)
+		setErrors(validationErrors);
+		if(noErrors){
+			console.log("Authenticated",inputs);
+			localStorage.setItem("careerDetails",JSON.stringify(inputs));
+      toast.success("Submitted SuccessFull")
+		}else{
+			console.log("errors try again",validationErrors);
+		}
     console.log(inputs);
   }
   
@@ -185,6 +182,7 @@ function Career() {
               select
               fullWidth
               autoFocus
+              {...(errors.career && {error:true,helperText:errors.career})}
               label="Career Level"
               name="career"
               value={inputs.career}
@@ -208,6 +206,7 @@ function Career() {
               fullWidth
               label="Industries"
               name="industry"
+              {...(errors.industry && {error:true,helperText:errors.industry})}
               value={inputs.industry}
               onChange={handleChange}
               SelectProps={{
@@ -234,6 +233,7 @@ function Career() {
                   {...params}
                   variant="outlined"
                   fullWidth
+                  {...(errors.skills && {error:true,helperText:errors.skills})}
                   placeholder="Skills"
                 />
               )}
@@ -252,6 +252,7 @@ function Career() {
                   label="Category"
                   name="category"
                   value={category}
+                  {...(errors.experience && {error:true,helperText:errors.experience})}
                   onChange={handleCategory}
                   SelectProps={{
                     native: true,
@@ -274,6 +275,7 @@ function Career() {
                   label="Roles"
                   name="role"
                   value={Role}
+                  {...(errors.experience && {error:true})}
                   onChange={handleRoles}
                   SelectProps={{
                     native: true,
@@ -296,6 +298,7 @@ function Career() {
                   name="experience"
                   label="Experience"
                   value={experience}
+                  {...(errors.experience && {error:true})}
                   onChange={handleExperience}
                   SelectProps={{
                     native: true,
@@ -344,6 +347,7 @@ function Career() {
                   fullWidth
                   name="language"
                   label="Languages"
+                  {...(errors.language && {error:true,helperText:errors.language})}
                   value={language}
                   onChange={handleLanguage}
                   SelectProps={{
@@ -366,6 +370,7 @@ function Career() {
                   fullWidth
                   label="Level"
                   name="Level"
+                  {...(errors.language && {error:true})}
                   value={Level}
                   onChange={handleLanguageLevel}
                   SelectProps={{

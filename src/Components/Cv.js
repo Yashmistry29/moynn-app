@@ -24,10 +24,6 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     margin: theme.spacing(3,3),
     padding:theme.spacing(1),
-    // display: "flex",
-    // // background:"black",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
   container:{
     flex: 1,
@@ -55,17 +51,11 @@ const useStyles = makeStyles((theme) => ({
   paper2: {
     margin: theme.spacing(6,1),
     padding:theme.spacing(1),
-    // display: "flex",
-    // flexDirection: "column",
-    // alignItems: "center",
   },
   svg:{
     maxWidth:"50vh"
   },
   select:{
-    // display:"flex",
-    // alignItems:"strech",
-    // flexDirection:"column"
     width:"72"
   }
 }));
@@ -84,7 +74,6 @@ function Cv(props) {
     url:'',
   });
   const DesiredPosition=[];
-  // const [Load, setLoad] = useState(false)
 
   const handleENDrop=async(files)=>{
     const formData = new FormData();
@@ -219,16 +208,6 @@ function Cv(props) {
             <Typography style={{fontSize:"large"}}>Position applying for</Typography>
           </Grid>
           <Grid item xs>
-            {/* <div className={classes.select}>
-              <Multiselect
-                isObject={false}
-                onRemove={handleRemove}
-                onSelect={handleSelect}
-                options={AvailableJobList}
-                placeholder="Desired Position"
-                id="desiredPosition"
-              />
-            </div> */}
             <Autocomplete
               multiple
               id="tags-outlined"
